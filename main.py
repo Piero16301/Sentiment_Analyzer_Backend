@@ -45,7 +45,6 @@ for movie in top250:
         writer = csv.writer(f)
         writer.writerow(header)
         for review in movie['reviews']:
-            # remove \ and , from the data
             title = review['title'].replace(',', '').replace('\\', '')
             content = review['content'].replace(',', '').replace('\\', '')
             date = review['date'].replace(',', '').replace('\\', '')
