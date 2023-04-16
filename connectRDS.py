@@ -25,7 +25,9 @@ cnx.autocommit = True
 
 # CREATE TABLE IF NOT EXISTS comments (
 #     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+#     title VARCHAR(200) NOT NULL,
 #     content VARCHAR(2000) NOT NULL,
+#     register_date VARCHAR(50) NOT NULL,
 #     id_movie VARCHAR(8) NOT NULL,
 #     id_sentiment INT NOT NULL,
 #     FOREIGN KEY (id_movie) REFERENCES movies(id),
