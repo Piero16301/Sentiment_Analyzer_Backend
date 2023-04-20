@@ -1,22 +1,13 @@
-import mysql.connector
+import psycopg2
 import glob
 import csv
 
-cnx = mysql.connector.connect(
-    user='admin',
-    password='asdqwe123',
-    host='movie-sentimient-analyzer.cb2xvi9ppxkq.us-west-2.rds.amazonaws.com',
-    database='moviesentiment',
-)
-cnx.autocommit = True
-
-# CREATE TABLE IF NOT EXISTS movies (
-#     id VARCHAR(8) PRIMARY KEY,
-#     title VARCHAR(100) NOT NULL,
-#     overview VARCHAR(1000) NOT NULL,
-#     poster VARCHAR(1000) NOT NULL,
-#     year INTEGER NOT NULL
-# );
+conn = psycopg2.connect(host="database-1.cjkzjtw15olq.us-east-1.rds.amazonaws.com",
+                                database="sentimentdb",
+                                user="postgres",
+                                password="postgres",
+                                )
+        conn.autocommit = True
 
 
 ## Call Lambda after insert -----------------------------------------
@@ -41,6 +32,13 @@ CREATE TRIGGER new_comment_trigger
 """
 ## ----------------------- By el amigos ------------------------------- 
 
+# CREATE TABLE IF NOT EXISTS movies (
+#     id VARCHAR(8) PRIMARY KEY,
+#     title VARCHAR(100) NOT NULL,
+#     overview VARCHAR(1000) NOT NULL,
+#     poster VARCHAR(1000) NOT NULL,
+#     year INTEGER NOT NULL
+# );
 
 # CREATE TABLE IF NOT EXISTS sentiments (
 #     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -62,16 +60,18 @@ CREATE TRIGGER new_comment_trigger
 #     reader = csv.reader(f)
 #     next(reader)
 #     for row in reader:
-#         cursor = cnx.cursor()
+#         cursor = conn.cursor()
 #         cursor.execute('INSERT INTO movies (id, title, overview, poster, year) VALUES (%s, %s, %s, %s, %s)',
 #                        (row[0], row[1], row[2], row[3], row[4]))
 #         cursor.close()
-#
-# sentiments = ['positive', 'negative', 'neutral']
+#         print(f'Inserted {row[1]}')
+
+# sentiments = ['POSITIVE', 'NEGATIVE', 'NEUTRAL']
 # for sentiment in sentiments:
-#     cursor = cnx.cursor()
+#     cursor = conn.cursor()
 #     cursor.execute('INSERT INTO sentiments (sentiment) VALUES (%s)', (sentiment,))
 #     cursor.close()
+#     print(f'Inserted {sentiment} into sentiments table')
 
 
 
