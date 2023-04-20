@@ -13,10 +13,10 @@ conn = psycopg2.connect(host="database-1.cjkzjtw15olq.us-east-1.rds.amazonaws.co
 ## Call Lambda after insert -----------------------------------------
 ### Create Func
 """
-CREATE FUNCTION call_lambda() RETURNS trigger AS $$
+create or REPLACE FUNCTION call_lambda() RETURNS trigger AS $$
 begin
 	PERFORM * from aws_lambda.invoke(aws_commons.create_lambda_function_arn('arn:aws:lambda:us-east-1:895533407840:function:lambda_rds_to_kafka','us-east-1'),
-									CONCAT('{"id_comment": NEW.id,"content":NEW.content, "created_at": "', TO_CHAR(NOW()::timestamp, 'YYYY-MM-DD"T"HH24:MI:SS')'"}')::json,
+									CONCAT('{"id_comment": "',NEW.id'","content":"',NEW.content'")}')::json,
 									'Event'
 									);
   RETURN NEW;
@@ -24,7 +24,9 @@ END;
 $$ LANGUAGE plpgsql;
 """
 ### Create Triger
+
 """
+DROP TRIGGER IF EXISTS new_comment_trigger ON comments;
 CREATE TRIGGER new_comment_trigger
   AFTER INSERT ON comments 
   FOR EACH ROW
