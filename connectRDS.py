@@ -18,6 +18,30 @@ cnx.autocommit = True
 #     year INTEGER NOT NULL
 # );
 
+
+## Call Lambda after insert -----------------------------------------
+### Create Func
+"""
+CREATE FUNCTION call_lambda() RETURNS trigger AS $$
+begin
+	PERFORM * from aws_lambda.invoke(aws_commons.create_lambda_function_arn('arn:aws:lambda:us-east-1:895533407840:function:lambda_rds_to_kafka','us-east-1'),
+									CONCAT('{"id_comment": NEW.id,"content":NEW.content, "created_at": "', TO_CHAR(NOW()::timestamp, 'YYYY-MM-DD"T"HH24:MI:SS')'"}')::json,
+									'Event'
+									);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+"""
+### Create Triger
+"""
+CREATE TRIGGER new_comment_trigger
+  AFTER INSERT ON comments 
+  FOR EACH ROW
+  EXECUTE PROCEDURE call_lambda();
+"""
+## ----------------------- By el amigos ------------------------------- 
+
+
 # CREATE TABLE IF NOT EXISTS sentiments (
 #     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 #     sentiment VARCHAR(50) NOT NULL
@@ -48,6 +72,8 @@ cnx.autocommit = True
 #     cursor = cnx.cursor()
 #     cursor.execute('INSERT INTO sentiments (sentiment) VALUES (%s)', (sentiment,))
 #     cursor.close()
+
+
 
 movie_counter = 1
 for filename in glob.glob('data/*.csv'):
